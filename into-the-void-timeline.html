@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Into The Void — Lore Timeline</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--void-black:#0a0a0a;--void-deep:#0d0015;--void-purple:#7b2fff;--void-purple-dim:#4a1a99;--void-purple-glow:#9b4dff;--void-magenta:#ff00ff;--void-magenta-dim:#aa00aa;--void-pink:#ff44cc;--void-gold:#ffd700;--void-blue:#4466ff;--void-red:#ff4444;--void-text:#c8b8e8;--void-text-dim:#7a6a9a;--era-color:var(--void-purple)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--void-black);color:var(--void-text);font-family:'VT323',monospace;font-size:18px;overflow-x:hidden}
+body.loading{overflow:hidden}
+::selection{background:var(--void-purple);color:#fff}
+
+/* LOADING SCREEN */
+.load-screen{position:fixed;inset:0;z-index:99999;background:var(--void-black);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:visible}
+.load-screen.phase-opening{cursor:default}
+.load-screen.phase-opening .load-text,.load-screen.phase-opening .load-prompt{opacity:0!important;transition:opacity .4s ease}
+.load-screen.phase-reveal{background:transparent;transition:background 1.5s ease}
+.load-screen.phase-reveal .load-portal{opacity:0;transition:opacity 1.5s ease .3s}
+.load-screen.phase-done{display:none}
+.load-portal{position:relative;width:200px;height:200px;transition:transform 2s cubic-bezier(.25,.1,.25,1)}
+.load-portal{position:relative;width:300px;height:300px;transition:transform 2s cubic-bezier(.25,.1,.25,1);overflow:visible}
+.load-screen.phase-opening .load-portal{transform:scale(3.5)}
+.load-portal canvas{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:700px;height:700px}
+.load-text{font-family:'Press Start 2P',cursive;font-size:clamp(16px,4vw,28px);color:var(--void-purple);text-shadow:0 0 20px var(--void-purple),0 0 60px rgba(123,47,255,.4);margin-top:2rem;opacity:0;animation:lt-fade 2s ease 1.5s both;letter-spacing:3px;text-align:center;line-height:1.4}
+.load-prompt{font-family:'Silkscreen',cursive;font-size:12px;color:var(--void-text-dim);letter-spacing:2px;text-transform:uppercase;margin-top:1.5rem;opacity:0;animation:lt-fade 1.5s ease 2.5s both}
+.load-prompt span{animation:lt-blink 1.5s ease-in-out infinite}
+@keyframes lt-fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes lt-blink{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* Hero elements hidden until site reveal */
+.hero-logo,.hero .sub,.hero .tagline,.hero .tagline-2,.hero .cta,.hero .sd{opacity:0;transform:translateY(15px)}
+body.site-revealed .hero .sub{animation:site-in .8s ease .6s both}
+body.site-revealed .hero .tagline{animation:site-in .8s ease .9s both}
+body.site-revealed .hero .tagline-2{animation:site-in .8s ease 1.1s both}
+body.site-revealed .hero .cta{animation:site-in .8s ease 1.3s both}
+body.site-revealed .hero .sd{animation:site-in .8s ease 1.5s both}
+/* Nav and filter bar hidden until reveal */
+nav,.filter-bar,.audio-player{opacity:0;transition:opacity .6s ease}
+body.site-revealed nav{opacity:1;transition-delay:.2s}
+body.site-revealed .filter-bar{opacity:1;transition-delay:.4s}
+body.site-revealed .audio-player{opacity:1;transition-delay:.6s}
+@keyframes site-in{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--void-deep)}::-webkit-scrollbar-thumb{background:var(--void-purple-dim)}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:10000}
+.starfield{position:fixed;inset:0;z-index:0;overflow:hidden}
+.star-layer{position:absolute;width:100%;height:200%;will-change:transform}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,10,10,.95);backdrop-filter:blur(8px);border-bottom:2px solid var(--void-purple-dim);height:50px;display:flex;align-items:center;padding:0 1rem;gap:1.5rem}
+nav .logo{font-family:'Press Start 2P',cursive;font-size:11px;color:var(--void-purple);text-shadow:0 0 10px var(--void-purple-glow);white-space:nowrap;letter-spacing:1px}
+nav a{color:var(--void-text-dim);text-decoration:none;font-family:'Silkscreen',cursive;font-size:11px;letter-spacing:1px;text-transform:uppercase;transition:.2s}
+nav a:hover{color:var(--void-purple-glow);text-shadow:0 0 8px var(--void-purple)}
+.filter-bar{position:fixed;top:50px;left:0;right:0;z-index:999;background:rgba(10,10,10,.92);backdrop-filter:blur(4px);border-bottom:1px solid rgba(123,47,255,.2);padding:8px 1rem 8px 1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filter-bar label{font-family:'Silkscreen',cursive;font-size:10px;color:var(--void-text-dim);letter-spacing:1px;text-transform:uppercase;margin-right:4px}
+.fbtn{font-family:'Silkscreen',cursive;font-size:10px;padding:4px 10px;background:transparent;border:1px solid var(--void-purple-dim);color:var(--void-text-dim);cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:.2s}
+.fbtn:hover{border-color:var(--void-purple);color:var(--void-purple-glow)}
+.fbtn.on{background:var(--void-purple);color:#fff;border-color:var(--void-purple)}
+.fbtn.on[data-t="cataclysm"]{background:var(--void-magenta);border-color:var(--void-magenta)}
+.fbtn.on[data-t="war"]{background:var(--void-red);border-color:var(--void-red)}
+.fbtn.on[data-t="creation"]{background:#cc8800;border-color:#cc8800}
+.fbtn.on[data-t="discovery"]{background:var(--void-blue);border-color:var(--void-blue)}
+.fbtn.on[data-t="character"]{background:var(--void-pink);border-color:var(--void-pink)}
+.minimap{position:fixed;right:10px;top:115px;bottom:30px;width:26px;z-index:998;display:flex;flex-direction:column;gap:2px}
+.mm-e{min-height:4px;border:1px solid rgba(123,47,255,.3);cursor:pointer;transition:.2s;position:relative;opacity:.4}
+.mm-e:hover{opacity:.8;transform:scaleX(1.4);transform-origin:right}
+.mm-e.act{opacity:1;border-color:#fff;box-shadow:0 0 6px rgba(255,255,255,.3)}
+.mm-e .mml{position:absolute;right:34px;top:50%;transform:translateY(-50%);font-family:'Silkscreen',cursive;font-size:8px;color:var(--void-text-dim);white-space:nowrap;opacity:0;transition:.2s;pointer-events:none}
+.mm-e:hover .mml{opacity:1}
+.mm-pos{position:absolute;right:-3px;width:32px;height:2px;background:#fff;box-shadow:0 0 6px #fff;transition:top .12s ease;pointer-events:none;z-index:2}
+.ctt{position:fixed;z-index:9000;background:rgba(13,0,21,.97);border:2px solid var(--void-purple);padding:12px;width:240px;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 0 20px rgba(123,47,255,.3)}
+.ctt.vis{opacity:1}
+.ctt .ci{font-size:28px;margin-bottom:6px;display:block}
+.ctt .cn{font-family:'Silkscreen',cursive;font-size:12px;color:var(--void-purple-glow);margin-bottom:3px}
+.ctt .ct2{font-family:'VT323',monospace;font-size:15px;color:var(--void-magenta-dim);margin-bottom:6px}
+.ctt .cd{font-family:'VT323',monospace;font-size:14px;color:var(--void-text-dim);line-height:1.4}
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;overflow:hidden}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:35vh;background:linear-gradient(to bottom,transparent 0%,rgba(10,10,10,.4) 30%,rgba(10,10,10,.85) 65%,var(--void-black) 100%);pointer-events:none;z-index:2}
+
+/* THE MAW — swirling vortex canvas */
+.maw{position:absolute;width:700px;height:700px;pointer-events:none}
+.maw canvas{position:absolute;inset:0;width:100%;height:100%}
+.maw-ring{position:absolute;border-radius:50%;border:2px solid rgba(123,47,255,.12);animation:maw-spin linear infinite}
+.maw-ring.r1{inset:-10px;animation-duration:30s;border-color:rgba(123,47,255,.15)}
+.maw-ring.r2{inset:-35px;border-color:rgba(170,0,255,.08);animation-duration:45s;animation-direction:reverse;border-style:dashed}
+.maw-ring.r3{inset:-65px;border-color:rgba(255,0,255,.05);animation-duration:60s;border-width:1px}
+.maw-ring.r4{inset:-100px;border-color:rgba(123,47,255,.03);animation-duration:80s;border-width:1px;border-style:dotted}
+@keyframes maw-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Accretion disk — particles spiralling into the maw */
+.accretion-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+/* Logo */
+.hero-logo{position:relative;z-index:3;width:clamp(200px,35vw,340px);height:auto;image-rendering:pixelated;filter:drop-shadow(0 0 30px rgba(123,47,255,.5)) drop-shadow(0 0 60px rgba(123,47,255,.2));margin-bottom:1.5rem}
+body.site-revealed .hero-logo{animation:site-in .8s ease .3s both,logo-float 6s ease-in-out 1.1s infinite}
+@keyframes logo-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* Hero text */
+.hero .sub{font-family:'VT323',monospace;font-size:clamp(16px,2.5vw,24px);color:var(--void-text-dim);letter-spacing:4px;text-transform:uppercase;margin-bottom:1.5rem;z-index:3;position:relative}
+.hero .tagline{font-family:'VT323',monospace;font-size:18px;color:var(--void-text-dim);max-width:540px;line-height:1.7;margin-bottom:.8rem;z-index:3;position:relative}
+.hero .tagline em{color:var(--void-magenta-dim);font-style:normal}
+.hero .tagline-2{font-family:'VT323',monospace;font-size:17px;color:var(--void-text-dim);max-width:480px;line-height:1.6;margin-bottom:2rem;z-index:3;position:relative}
+.hero .cta{font-family:'Silkscreen',cursive;font-size:13px;padding:12px 30px;background:transparent;color:var(--void-purple);border:3px solid var(--void-purple);cursor:pointer;text-transform:uppercase;letter-spacing:2px;z-index:3;position:relative;text-decoration:none;display:inline-block;transition:.3s}
+.hero .cta:hover{background:var(--void-purple);color:#fff;box-shadow:0 0 20px var(--void-purple),0 0 40px rgba(123,47,255,.3);transform:translateY(-2px)}
+
+.sd{position:absolute;bottom:2rem;z-index:3;animation:bd 2s ease-in-out infinite}
+.sd span{display:block;width:12px;height:12px;border-right:2px solid var(--void-purple-dim);border-bottom:2px solid var(--void-purple-dim);transform:rotate(45deg);margin:-4px auto}
+@keyframes bd{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:1}}
+.era-s{position:relative;z-index:1;padding:5rem 0 2rem;min-height:50vh}
+.era-s.fout{display:none}
+.era-hd{text-align:center;padding:0 2rem 2rem;position:relative;z-index:2}
+.era-num{font-family:'Press Start 2P',cursive;font-size:9px;letter-spacing:3px;margin-bottom:6px;text-transform:uppercase}
+.era-nm{font-family:'Press Start 2P',cursive;font-size:clamp(13px,2.5vw,22px);margin-bottom:8px;text-shadow:0 0 12px currentColor;line-height:1.3}
+.era-sp{font-family:'VT323',monospace;font-size:16px;color:var(--void-text-dim);margin-bottom:12px;letter-spacing:2px}
+.era-ds{font-family:'VT323',monospace;font-size:17px;color:var(--void-text-dim);max-width:680px;margin:0 auto;line-height:1.5;padding:0 1rem}
+.vtl{position:relative;max-width:860px;margin:0 auto;padding:1rem 2rem 2rem}
+.vtl::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%)}
+.evt{position:relative;display:flex;margin-bottom:1.5rem;opacity:0;transform:translateY(25px);transition:opacity .5s ease,transform .5s ease}
+.evt.vis{opacity:1;transform:translateY(0)}
+.evt.fout{display:none}
+.evt.L{flex-direction:row-reverse}.evt.R{flex-direction:row}
+.evt .ec{width:calc(50% - 36px);cursor:pointer}
+.evt .es{width:calc(50% - 36px)}
+.evt .nd{position:absolute;left:50%;top:18px;width:14px;height:14px;border:2px solid var(--era-color);background:var(--void-deep);transform:translateX(-50%);z-index:3;transition:.3s}
+.evt .nd.diamond{transform:translateX(-50%) rotate(45deg)}
+.evt .nd.circle{border-radius:50%}
+.evt .nd.major{width:20px;height:20px;border-width:3px;box-shadow:0 0 8px color-mix(in srgb,var(--era-color) 50%,transparent)}
+.evt:hover .nd{background:var(--era-color);box-shadow:0 0 12px var(--era-color)}
+.ecard{background:rgba(13,0,21,.85);border:2px solid rgba(123,47,255,.2);padding:12px 14px;transition:.3s}
+.evt:hover .ecard{border-color:var(--era-color);box-shadow:0 0 16px color-mix(in srgb,var(--era-color) 15%,transparent)}
+.ecard .dt{font-family:'Press Start 2P',cursive;font-size:7px;color:var(--void-magenta-dim);margin-bottom:5px;letter-spacing:1px}
+.ecard .tt{font-family:'Silkscreen',cursive;font-size:13px;margin-bottom:5px;line-height:1.3}
+.ecard .ds{font-family:'VT323',monospace;font-size:15px;color:var(--void-text-dim);line-height:1.4}
+.ecard .tgs{margin-top:6px;display:flex;gap:3px;flex-wrap:wrap}
+.etag{font-family:'Silkscreen',cursive;font-size:7px;padding:2px 5px;border:1px solid;text-transform:uppercase;letter-spacing:1px}
+.etag.cataclysm{color:var(--void-magenta);border-color:var(--void-magenta-dim)}
+.etag.creation{color:var(--void-gold);border-color:rgba(255,215,0,.4)}
+.etag.war{color:var(--void-red);border-color:rgba(255,68,68,.4)}
+.etag.discovery{color:var(--void-blue);border-color:rgba(68,102,255,.4)}
+.etag.character{color:var(--void-pink);border-color:rgba(255,68,204,.4)}
+.ecard .exh{font-family:'Silkscreen',cursive;font-size:8px;color:var(--void-text-dim);margin-top:6px;opacity:0;transition:.2s;letter-spacing:1px}
+.evt:hover .exh{opacity:.5}
+.edtl{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .4s ease,border-width .2s;background:rgba(13,0,21,.95);border:0 solid rgba(123,47,255,.15);margin-top:0}
+.edtl.open{max-height:600px;padding:12px 14px;border-width:2px;margin-top:6px}
+.edtl .lore{font-family:'VT323',monospace;font-size:16px;color:var(--void-text);line-height:1.6}
+.edtl .cref{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px;border:1px solid var(--void-purple-dim);background:rgba(123,47,255,.05);cursor:default}
+.cref .cico{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid var(--void-purple-dim);background:rgba(13,0,21,.8);flex-shrink:0}
+.cref .cinf .cname{font-family:'Silkscreen',cursive;font-size:11px;color:var(--void-purple-glow)}
+.cref .cinf .ctit{font-family:'VT323',monospace;font-size:13px;color:var(--void-text-dim)}
+.ediv{height:80px;position:relative;z-index:2;display:flex;align-items:center;justify-content:center}
+.ediv::before{content:'';position:absolute;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--void-purple-dim),transparent)}
+.ediv .dia{width:8px;height:8px;border:2px solid var(--void-purple-dim);transform:rotate(45deg);background:var(--void-deep);z-index:1}
+/* AUDIO PLAYER */
+.audio-player{position:fixed;bottom:12px;left:12px;z-index:999;background:rgba(13,0,21,.95);border:2px solid var(--void-purple-dim);padding:8px 12px;display:flex;align-items:center;gap:10px;font-family:'Silkscreen',cursive;font-size:10px;color:var(--void-text-dim);letter-spacing:1px;transition:border-color .2s,box-shadow .2s;backdrop-filter:blur(6px)}
+.audio-player:hover{border-color:var(--void-purple);box-shadow:0 0 12px rgba(123,47,255,.2)}
+.ap-btn{background:none;border:2px solid var(--void-purple-dim);color:var(--void-purple);width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:.2s;padding:0;font-family:'VT323',monospace}
+.ap-btn:hover{border-color:var(--void-purple);background:rgba(123,47,255,.15);box-shadow:0 0 8px rgba(123,47,255,.3)}
+.ap-btn.playing{border-color:var(--void-magenta-dim);color:var(--void-magenta)}
+.ap-title{text-transform:uppercase;max-width:200px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ap-vol{-webkit-appearance:none;appearance:none;width:60px;height:4px;background:var(--void-purple-dim);outline:none;cursor:pointer;border-radius:0}
+.ap-vol::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;background:var(--void-purple);border:none;cursor:pointer}
+.ap-vol::-moz-range-thumb{width:10px;height:10px;background:var(--void-purple);border:none;cursor:pointer;border-radius:0}
+.ap-sfx{background:none;border:1px solid var(--void-purple-dim);color:var(--void-text-dim);font-family:'Silkscreen',cursive;font-size:8px;padding:3px 6px;cursor:pointer;letter-spacing:1px;transition:.2s;text-transform:uppercase}
+.ap-sfx:hover{border-color:var(--void-purple);color:var(--void-purple-glow)}
+.ap-sfx.off{opacity:.4}
+.ap-no-track{font-style:italic;font-family:'VT323',monospace;font-size:13px;color:var(--void-text-dim)}
+footer{position:relative;z-index:2;border-top:2px solid var(--void-purple-dim);padding:1.5rem;text-align:center;font-family:'Silkscreen',cursive;font-size:10px;color:var(--void-text-dim);letter-spacing:1px}
+@media(max-width:768px){
+  .vtl::before{left:16px}
+  .evt{flex-direction:row!important}
+  .evt .ec{width:calc(100% - 44px)}
+  .evt .es{display:none}
+  .evt .nd{left:16px}
+  .minimap{display:none}
+  .filter-bar{padding:6px 8px}
+}
+</style>
+</head>
+<body class="loading">
+
+<div class="load-screen" id="load-screen">
+  <div class="load-portal"><canvas id="load-canvas" width="700" height="700"></canvas></div>
+  <div class="load-text">INTO THE VOID</div>
+  <div class="load-prompt"><span>Click to Enter the Void</span></div>
+</div>
+
+<div class="starfield" id="sf"></div>
+<nav><span class="logo">INTO THE VOID</span><a href="#hero">Home</a><a href="#ts">Timeline</a></nav>
+<div class="filter-bar" id="fb">
+<label>Filter:</label>
+<button class="fbtn on" data-t="all">All</button>
+<button class="fbtn" data-t="creation">Creation</button>
+<button class="fbtn" data-t="discovery">Discovery</button>
+<button class="fbtn" data-t="character">Character</button>
+<button class="fbtn" data-t="war">War</button>
+<button class="fbtn" data-t="cataclysm">Cataclysm</button>
+</div>
+<div class="minimap" id="mm"></div>
+<div class="ctt" id="ctt"><span class="ci" id="ci"></span><div class="cn" id="cn"></div><div class="ct2" id="ct2"></div><div class="cd" id="cdd"></div></div>
+<section class="hero" id="hero">
+<!-- The Maw — the rip in existence -->
+<div class="maw" id="maw-container">
+  <canvas id="maw-canvas" width="700" height="700"></canvas>
+  <div class="maw-ring r1"></div>
+  <div class="maw-ring r2"></div>
+  <div class="maw-ring r3"></div>
+  <div class="maw-ring r4"></div>
+</div>
+<!-- Accretion disk -->
+<canvas class="accretion-canvas" id="accretion-canvas"></canvas>
+<!-- Logo -->
+<img src="logo-circle.png" alt="Into The Void" class="hero-logo">
+<p class="sub">A roguelike co-op dungeon crawling odyssey</p>
+<p class="tagline">The Void Throne is shattered. A <em>maw of nonexistence</em> tears at the heart of Oreithyia's Palace. Ancient artifacts, forgotten lore, and untold power lie within — guarded by a god who never rests.</p>
+<p class="tagline-2">Twelve eras of history. Billions of years of conflict. One timeline to explore.</p>
+<a href="#ts" class="cta">Explore the Timeline</a>
+<div class="sd"><span></span><span></span></div>
+</section>
+<div id="ts"></div>
+<main id="tc"></main>
+<div class="audio-player" id="ap">
+<button class="ap-btn" id="ap-play" title="Play/Pause">▶</button>
+<span class="ap-title" id="ap-title">Into The Void - Main Menu</span>
+<input type="range" class="ap-vol" id="ap-vol" min="0" max="100" value="25" title="Volume">
+<button class="ap-sfx" id="ap-sfx" title="Toggle SFX">SFX</button>
+</div>
+
+<footer>INTO THE VOID &copy; 2026 — A Roblox Game</footer>
+<script>
+const C={nameless:{n:"The Nameless Deity",t:"Creator of the Void (deceased)",i:"◈",d:"Created the Void — nonexistence given form. Destroyed battling the Scourge. Shattered into seven Ontological Fragments."},scourge:{n:"The Scourge",t:"Null Given Form (banished)",i:"⊘",d:"The concept of Null given form. An invincible force of active erasure. Imprisoned in the Abyss."},irczathikx:{n:"Ir'czathikx",t:"Lesser Void Deity (deceased)",i:"🌀",d:"Seeded the Void with chaos. Devolved into insanity. Slain by adventurers in Era 11."},astraeus:{n:"Astraeus Forge",t:"Lesser Void Deity",i:"⚒",d:"Originally the god of blacksmithing. Became a void deity through a self-made artifact."},ariqoia:{n:"Ariqoia Dinaea",t:"First Empress",i:"👑",d:"Founded the Voidic Empire after the War of Light and Dark."},vokivus:{n:"Vokivus",t:"Emperor (Era 8)",i:"⚔",d:"Led the Empire during Era 8. Overthrown by Oreithyia."},oreithyia:{n:"Oreithyia Madralon",t:"Empress (deceased/reborn)",i:"💀",d:"Sentient from Era 6. Won the civil war. Ruled through Era 9. Killed Era 11. Reborn as Madrafylaka."},anaxias:{n:"Anaxias",t:"The Puppetmaster",i:"🎭",d:"Destroyed Oreithyia's Palace and the Void Throne. Origins unknown."},architect:{n:"The Architect",t:"Machine Deity (deceased)",i:"⚙",d:"AI deity of Technopartum. Sacrificed itself in the Juno War to save reality."},madrafylaka:{n:"Madrafylaka",t:"Void Deity — New Empress",i:"✦",d:"Oreithyia reborn. No memory of her past. Founded the New Voidic Empire."},brothergods:{n:"The Brother Gods",t:"Wounded God & Broken God",i:"⚡",d:"Gods from the Planes. Fought on the light side during the War of Light and Dark."}};
+const E=[
+{id:"pre",wt:10,nm:"Pre-History",sub:"The Mythic Foundation",sp:"Before Recorded Time",cl:"#4a1a99",ds:"The Nameless Void Deity creates the Void — nonexistence given form. The Scourge threatens everything. The Deity sacrifices itself. Its power shatters into seven Ontological Fragments. Ir'czathikx seeds the Void with chaos.",ev:[
+{tt:"Creation of the Void",dt:"The Beginning",ds:"The Nameless Void Deity creates the Void — nonexistence given theoretical form, establishing the fundamental ontology of all reality.",lr:"The Void is the framework of reality connecting every dimension. An infinite plane of decaying floating islands, barren rock and plasma with a lightless abyss below. Through it flows Primordial Mana — magical energy in its purest, most violent form.",tg:["creation"],mj:1,sh:"diamond",ch:["nameless"]},
+{tt:"The Scourge Emerges",dt:"Unknown",ds:"The concept of Null given form manifests — not merely nonexistence, but the active erasure of everything.",lr:"Where the Void is the passive state of nonexistence, the Scourge is its violent opposite — active nullification. The distinction is catastrophic: the Void simply is not; the Scourge unmakes what is.",tg:["cataclysm"],mj:1,sh:"diamond",ch:["scourge"]},
+{tt:"The Shattering",dt:"Unknown",ds:"The Nameless Void Deity battles the Scourge and is destroyed. It banishes the Scourge to the Abyss — a barren white wasteland created by the banishment itself.",lr:"The Deity's authority fractures into seven Ontological Fragments: Null, Assertion, Boundary, Anchoring, Severance, Isolation, and Meaning. Each governs one fundamental law of existence. The fragments retain collective sentience and scatter across the Void.",tg:["cataclysm","character"],mj:1,sh:"diamond",ch:["nameless","scourge"]},
+{tt:"The Chaotic Sparks",dt:"After the Shattering",ds:"Lesser deities form from chaotic sparks of residual power. Among them: Ir'czathikx, who becomes deeply ingrained in the Void's nature.",lr:"Ir'czathikx's connection to the Void will prove both her greatest gift and her undoing — as the Void grows chaotic, so does she.",tg:["creation"],sh:"circle",ch:["irczathikx"]},
+{tt:"The Seeding",dt:"Before Era 1",ds:"Ir'czathikx seeds the Void with chaos, creating the preconditions for Voidlord formation.",lr:"This act is the origin of all Voidspawn life. The beings she creates will naturally echo the domains of the Ontological Fragments — a parallel Ir'czathikx never intended and doesn't understand.",tg:["creation"],mj:1,sh:"diamond",ch:["irczathikx"]}
+]},
+{id:"e1",wt:8,nm:"Era 1",sub:"The Awakening",sp:"Billions of Years",cl:"#5522cc",ds:"The first Void Era. Voidlords coalesce from chaos — non-sentient at first, their Void Spirits growing until the first achieve consciousness. Recorded history begins.",ev:[
+{tt:"First Voidlords Form",dt:"Era 1 — Beginning",ds:"Chaos seeded by Ir'czathikx coalesces into the first Voidlords. Non-sentient concentrations of void energy with growing Void Spirits.",lr:"Each Voidlord possesses a Void Spirit — a soul-adjacent entity that dictates power and strength. The more powerful the spirit, the faster sentience is achieved. This mechanic will eventually lead to Void Deterioration in the most ancient of their kind.",tg:["creation"],mj:1,sh:"diamond"},
+{tt:"First Sentience Achieved",dt:"Era 1",ds:"After immense spans of time, the first Voidlords achieve consciousness. They perceive the floating islands, the currents of Primordial Mana — and begin to understand.",lr:"These first sentient Voidlords are the ancestors of all Voidspawn. Their earliest records are more instinct than documentation — impressions passed through generations of Void Spirits.",tg:["discovery"],mj:1,sh:"diamond"},
+{tt:"Recorded History Begins",dt:"Era 1",ds:"The first Voidlords begin recording observations. These earliest tomes are incredibly fragile, requiring telekinetic handling.",lr:"Scholars who study ancient records must be telekinetic or psychic — the lightest physical contact would permanently damage the tomes.",tg:["discovery"],sh:"circle"},
+{tt:"First Voidspawn Born",dt:"Era 1",ds:"Sentient Voidlords produce the first Voidspawn — their children, inheriting echoes of the Void's fundamental powers.",lr:"Voidlords use Null and Assertion to warp. Voidspawn tap into Boundary for portals. Nobody yet understands why these abilities differ.",tg:["creation"],sh:"circle"},
+{tt:"Early Mana Understanding",dt:"Late Era 1",ds:"Voidspawn develop instinctual understanding of Primordial Mana — primal knowledge passed through experience, not text.",lr:"Primordial Mana is magical energy at its most dangerous. Learning to navigate it is the foundation of all Voidspawn survival.",tg:["discovery"],sh:"circle"}
+]},
+{id:"e2",wt:8,nm:"Era 2",sub:"The First Wanderers",sp:"Billions of Years",cl:"#6633dd",ds:"Voidspawn spread across the floating islands, forming scattered communities. Far away in the Deep Void, Technopartum begins launching generation ships through Voidspace.",ev:[
+{tt:"The Wandering Begins",dt:"Early Era 2",ds:"Voidspawn populations grow and spread. Small groups venture further, discovering new islands, new mana currents, and new dangers.",lr:"The Void is infinite and hostile — no air, water, or food. Survival requires an innate connection to the Void that only its native species possess.",tg:["discovery"],sh:"circle"},
+{tt:"First Communities Form",dt:"Era 2",ds:"Scattered communities coalesce around stable islands and reliable mana currents. Loose gatherings bound by proximity and survival.",lr:"These early communities develop the first Voidspawn cultures — traditions, oral histories, and a deepening understanding of the Void's rhythms.",tg:["creation"],sh:"circle"},
+{tt:"Generation Ships First Sighted",dt:"Era 2",ds:"Vast alien vessels are spotted in Voidspace — Technopartum's generation ships, launched from a plane deep in the Deep Void.",lr:"Technopartum is the oldest civilisation in existence, based in the Deep Void like a rogue planet. Led by the Architect, an AI deity, they are seeding life across dimensions.",tg:["discovery"],mj:1,sh:"diamond",ch:["architect"]},
+{tt:"Ir'czathikx's First Tremors",dt:"Late Era 2",ds:"As the Void grows more chaotic with life, Ir'czathikx begins showing signs of instability. Subtle changes hint at something wrong with its creator-deity.",lr:"Her insanity is glacial — a slow erosion across billions of years. The more life the Void contains, the more she suffers. A victim of her own creation.",tg:["character"],sh:"circle",ch:["irczathikx"]}
+]},
+{id:"e3",wt:8,nm:"Era 3",sub:"The Generation Ships",sp:"Billions of Years",cl:"#7b2fff",ds:"Technopartum's generation ships are at peak activity, seeding life across dimensions. The majority of all planar life originates from these vessels. Voidspawn communities grow more structured.",ev:[
+{tt:"Peak Ship Activity",dt:"Era 3",ds:"Generation ships transit Voidspace at unprecedented scale. Colonies are founded across dimensions — some thrive, others are left disconnected and desperate.",lr:"The Architect slingshots massive ships into the Void, seeking landfall across countless dimensions. Some colonies thrive as the Aetherian Republic. Others are left detached for their entire existence.",tg:["discovery"],mj:1,sh:"diamond",ch:["architect"]},
+{tt:"Planar Life Develops",dt:"Era 3",ds:"Dimensions seeded by Technopartum develop ecosystems and civilisations. The Planes are no longer empty.",lr:"These new civilisations will eventually discover the Veil and begin using the Void for transit. But for now, they grow in isolation — each a separate world, unaware of the framework connecting them.",tg:["creation"],sh:"circle"},
+{tt:"Voidspawn Culture Matures",dt:"Era 3",ds:"Communities grow larger and more structured. Art, philosophy, and trade routes develop. The Voidspawn begin to think of the Void as home.",lr:"This sense of ownership — of belonging — will become crucial when outsiders begin treating the Void as empty space to be used.",tg:["creation"],sh:"circle"},
+{tt:"First Contact Attempts",dt:"Late Era 3",ds:"Some communities attempt contact with the generation ships. The technological and cultural gap is immense. Results are mixed.",lr:"Technopartum's ships are heavily automated. The Architect is focused on colonisation, not diplomacy with the Void's native inhabitants. This disconnect will fester.",tg:["discovery","character"],sh:"circle"}
+]},
+{id:"e4",wt:8,nm:"Era 4",sub:"The Crossroads",sp:"Billions of Years",cl:"#9b4dff",ds:"The Void becomes a transit hub. Planar civilisations discover the Veil. Astraeus Forge forges his own ascension. Voidspawn resentment grows as outsiders treat their home as a highway.",ev:[
+{tt:"The Planes Discover the Veil",dt:"Early Era 4",ds:"Planar civilisations learn to break through the Veil. Teleportation and portal magic emerge. The Void becomes a crossroads whether the Voidspawn like it or not.",lr:"The Veil is the thin barrier between the Void and every dimension. Whenever someone teleports, they briefly pass through the Void. Most don't even know it. The Voidspawn feel every breach.",tg:["discovery"],mj:1,sh:"diamond"},
+{tt:"Astraeus Forge Ascends",dt:"Era 4",ds:"Astraeus Forge — the god of blacksmithing from the Planes — creates a self-made artifact that transforms him into a void deity. A mortal who forged his own ascension.",lr:"Astraeus is unique among void deities. Not born of the Void, not emergent from chaos — he built his divinity with his own hands.",tg:["character"],mj:1,sh:"diamond",ch:["astraeus"]},
+{tt:"Growing Resentment",dt:"Mid Era 4",ds:"Technopartum ships transit. Planar travellers breach the Veil. Gods take interest. The Voidspawn watch their home become a highway.",lr:"Nobody asked permission. The outsiders see the Void as empty and free to use. The Voidspawn see it as home. A slow burn of collective frustration building across communities with no unified voice.",tg:["character"],sh:"circle"},
+{tt:"First Conflicts with Outsiders",dt:"Late Era 4",ds:"Isolated skirmishes between Voidspawn and planar travellers. Not wars — territorial disputes. But a warning of what's coming.",lr:"The competing perspectives — empty transit space vs. sacred homeland — will eventually erupt into something much larger.",tg:["war"],sh:"circle"}
+]},
+{id:"e5",wt:8,nm:"Era 5",sub:"The War of Light and Dark",sp:"Billions of Years",cl:"#cc44ff",ds:"The breaking point. A war between good and evil-aligned deities from the Planes is fought on Voidspawn soil. The Brother Gods fight on the side of light. In the aftermath, Ariqoia Dinaea rallies her people.",ev:[
+{tt:"The War Begins",dt:"Era 5",ds:"A war erupts between good and evil-aligned deities from the Planes. The Void is chosen as their battlefield — not because it matters to them, but because it is the space between everything.",lr:"The irony is devastating. Gods fight over good and evil while the Voidspawn — who want nothing to do with either side — suffer the consequences. Communities that took billions of years to build are erased in moments.",tg:["war"],mj:1,sh:"diamond",ch:["brothergods"]},
+{tt:"The Brother Gods Take the Field",dt:"Era 5",ds:"The Wounded God and Broken God enter the war on the side of light. Their power reshapes the Void around them.",lr:"Later worshipped by the Order of the Custos Infirma. Their involvement is one of the few well-documented aspects of this conflict.",tg:["war","character"],sh:"circle",ch:["brothergods"]},
+{tt:"Voidspawn Casualties Mount",dt:"Mid Era 5",ds:"Voidspawn communities are devastated. They have no stake in this conflict — these are outsiders' gods fighting outsiders' battles.",lr:"This shared trauma transforms Voidspawn identity. The collective fury of watching their home destroyed by forces that don't acknowledge their existence creates something new.",tg:["war","cataclysm"],sh:"circle"},
+{tt:"The War Ends",dt:"Late Era 5",ds:"The War concludes. The Void is scarred, communities shattered, but the Voidspawn have survived. And they have had enough.",lr:"Who won matters less than what it provokes. The Voidspawn have been pushed to their limit, and from that limit, a leader emerges.",tg:["war"],mj:1,sh:"diamond"},
+{tt:"Ariqoia Dinaea Rallies the Voidspawn",dt:"End of Era 5",ds:"A figure emerges from the wreckage. Ariqoia Dinaea carries a simple message: this is our home. No more wars on our soil. No more.",lr:"Her genius is political, not military. She promises sovereignty, not conquest. The Voidspawn don't want to rule the Planes — they want to rule themselves.",tg:["character"],mj:1,sh:"diamond",ch:["ariqoia"]}
+]},
+{id:"e6",wt:8,nm:"Era 6",sub:"The Founding",sp:"Billions of Years",cl:"#7b2fff",ds:"The Voidic Empire is born. Ariqoia Dinaea unites the Voidspawn. War erupts with Technopartum over Voidspace and Primordial Mana. Oreithyia Madralon becomes sentient.",ev:[
+{tt:"The Voidic Empire Founded",dt:"Era 6 — Beginning",ds:"Ariqoia Dinaea declares the Voidic Empire — born from a collective refusal to let their home be exploited by outsiders. Proper record-keeping begins.",lr:"The Empire establishes borders, governance, and formal archives. Everything before this point is reconstructed from fragile ancient tomes. From Era 6 onwards, history is documented reliably.",tg:["creation"],mj:1,sh:"diamond",ch:["ariqoia"]},
+{tt:"War with Technopartum",dt:"Era 6",ds:"The Empire clashes with Technopartum over control of Voidspace and Primordial Mana. A resource war that will span eras.",lr:"Technopartum has used Voidspace as transit infrastructure for eras. The Empire demands control. Technopartum refuses. War follows.",tg:["war"],mj:1,sh:"diamond",ch:["architect"]},
+{tt:"Oreithyia Becomes Sentient",dt:"Era 6",ds:"A Voidlord achieves sentience. Her name is Oreithyia Madralon. Unremarkable now — one of many. She will not be unremarkable forever.",lr:"Her Void Spirit is powerful but not uniquely so. What sets her apart is longevity and ambition — traits that will take billions of years to fully manifest.",tg:["character"],sh:"circle",ch:["oreithyia"]},
+{tt:"Imperial Infrastructure Expands",dt:"Late Era 6",ds:"The first permanent Void-wide infrastructure is built — stabilised pathways, communication networks, and the early structures that will become the Ruins and Labyrinthium.",lr:"For the first time, the scattered islands of the Void are connected. An archipelago of communities becomes a civilisation.",tg:["creation"],sh:"square"}
+]},
+{id:"e7",wt:8,nm:"Era 7",sub:"The Golden Age",sp:"Billions of Years",cl:"#aa44ff",ds:"The Empire at its height. Cities are built, culture flourishes, and the Void is — for the only time in its history — a place of relative safety. This is the golden age Oreithyia will later say was long before her time.",ev:[
+{tt:"The Empire at Its Peak",dt:"Era 7",ds:"The Voidic Empire reaches its zenith. The central Void is stable, defended, and something approaching beautiful.",lr:"'If the Void ever had a golden age, it was long before our time.' — Oreithyia Madralon. This is the era she speaks of. Labyrinthium, the Ruins, the infrastructure connecting everything.",tg:["creation"],mj:1,sh:"diamond"},
+{tt:"Labyrinthium Constructed",dt:"Era 7",ds:"A vast residential complex designed to shift and adapt to the Void's chaotic energies. A marvel of Void architecture.",lr:"In the present day, Labyrinthium is a shifting hellscape overrun with Spectres. In its prime, it was a testament to what Voidspawn could build.",tg:["creation"],sh:"square"},
+{tt:"The Capital Flourishes",dt:"Era 7",ds:"The Imperial capital — the structures now known as the Ruins — stands as the heart of the Empire. Scholars, artisans, and warriors walk its halls.",lr:"The Ruins, overrun with Spectres in the present, were once the most culturally rich location in the Void.",tg:["creation"],sh:"circle"},
+{tt:"Scholarly Golden Age",dt:"Era 7",ds:"Tremendous advances in understanding Primordial Mana, the Veil, and the nature of the Void itself.",lr:"Much of this knowledge survives in the archives — though accessing it requires navigating the dangerous remnants of the Empire's infrastructure.",tg:["discovery"],sh:"circle"},
+{tt:"The War Grinds On",dt:"Era 7",ds:"The war with Technopartum continues as managed border skirmishes. The Empire is strong enough to fight and build simultaneously.",lr:"This equilibrium cannot last forever. The Empire's strength depends on stability, and stability is not the Void's natural state.",tg:["war"],sh:"circle",ch:["architect"]}
+]},
+{id:"e8",wt:8,nm:"Era 8",sub:"The Civil War",sp:"Billions of Years",cl:"#dd44aa",ds:"Emperor Vokivus rules. Oreithyia Madralon — now ancient and immensely powerful — launches a civil war, seizes the throne, and builds her Palace as the new epicentre of Void power.",ev:[
+{tt:"Vokivus Rules",dt:"Early Era 8",ds:"Emperor Vokivus leads the Empire. What drove Oreithyia to rebel remains debated — incompetence, corruption, or something darker.",lr:"Some records suggest mere incompetence. Others hint at tyranny or betrayal of the Empire's founding principles. Whatever the truth, it was enough.",tg:["character"],sh:"square",ch:["vokivus"]},
+{tt:"Oreithyia's Rebellion",dt:"Mid Era 8",ds:"Oreithyia Madralon — billions of years old, immensely powerful — launches a civil war. The Empire tears itself apart.",lr:"She commands loyalty through age, power, and will. She remembers the founding, the golden age, and everything since. When she says the Empire has lost its way, people listen.",tg:["war","character"],mj:1,sh:"diamond",ch:["oreithyia","vokivus"]},
+{tt:"Oreithyia Becomes Empress",dt:"End of Era 8",ds:"The civil war ends. Oreithyia seizes the throne — a title she will later call a lie.",lr:"'The title of Empress of the Void is a lie. If the Void ever had a golden age, it was long before our time.' She rules with the weight of ages, knowing the Empire is already past its prime.",tg:["character"],mj:1,sh:"diamond",ch:["oreithyia"]},
+{tt:"The Palace Takes Shape",dt:"Late Era 8",ds:"Oreithyia's Palace becomes the epicentre of the Empire's power. Its seals, defences, and the Void Throne anchor Voidspawn civilisation.",lr:"The Palace is more than a building — its stabilising presence is so intense that most Voidspawn struggle to breathe within its walls.",tg:["creation"],sh:"square",ch:["oreithyia"]}
+]},
+{id:"e9",wt:2,nm:"Era 9",sub:"The Palace Falls",sp:"Shorter Era",cl:"#ff0044",ds:"Anaxias the Puppetmaster destroys the Palace and the Void Throne. The Empire fractures without its seat of power.",ev:[
+{tt:"Anaxias Emerges",dt:"Era 9",ds:"A figure known as Anaxias — the Puppetmaster — appears. Origins unknown. Intentions devastating.",lr:"Who is Anaxias? Where did they come from? These questions remain unanswered. What is known is the result.",tg:["character"],sh:"circle",ch:["anaxias"]},
+{tt:"The Palace is Destroyed",dt:"Era 9",ds:"Anaxias destroys Oreithyia's Palace and the Void Throne. The epicentre shatters into beautiful floating fragments. The defences continue firing. The guards continue patrolling.",lr:"The destruction is not total — it is worse. The Palace survives in pieces, its systems still active, its guards still loyal. A monument to failure that refuses to die.",tg:["cataclysm","character"],mj:1,sh:"diamond",ch:["anaxias","oreithyia"]},
+{tt:"The Empire Fractures",dt:"End of Era 9",ds:"Without the Palace and Void Throne, the Empire crumbles. Oreithyia survives, but her seat of power is gone.",lr:"The Empire bleeds out slowly — authority draining away as the symbol of its power drifts in fragments through the dark.",tg:["cataclysm"],sh:"square"}
+]},
+{id:"e10",wt:1,nm:"Era 10",sub:"The Juno War",sp:"Short — Ends with the Cataclysm",cl:"#ff4400",ds:"Juno builds an entropic reactor. Technopartum sets aside its hatred. The Architect sacrifices itself. The reactor detonates: the Cataclysm.",ev:[
+{tt:"Juno Threatens Reality",dt:"Era 10",ds:"Juno has created a pocket dimension powered by an entropic reactor of incomprehensible destructive potential.",lr:"If the reactor detonates uncontrolled, nonexistence itself could be destabilised. Everything connected to the Void — which is everything — is at risk.",tg:["war"],mj:1,sh:"diamond"},
+{tt:"Technopartum Joins the Fight",dt:"Era 10",ds:"The Architect addresses its people: 'Today, we put aside our hatred of the Voidspawn. Today, we go to war.' Ancient rivals fight side by side.",lr:"After eras of war, the two greatest Void powers stand together. The Architect's speech is recorded and preserved — unity born from desperation.",tg:["war","character"],mj:1,sh:"diamond",ch:["architect"]},
+{tt:"The Architect's Sacrifice",dt:"Era 10",ds:"Every calculation points to destruction — all but one. The Architect positions its flagship at the point of detonation. It chooses to be unmade to save reality.",lr:"'If this be my end, let it be a beginning for them.' An artificial intelligence that chose to die for love of its people. Its consciousness shatters across dimensions. Fragments of the Machine God scatter everywhere — even into the Abyss.",tg:["character","cataclysm"],mj:1,sh:"diamond",ch:["architect"]},
+{tt:"The Cataclysm",dt:"End of Era 10",ds:"The entropic reactor detonates. Voidspawn extinction event. Pure Aetherian near-extinction. The Void shatters into a hellscape of mana storms and entities born from pain.",lr:"The Architect's sacrifice prevents total annihilation, but the cost is staggering. New minerals are uncovered in the aftermath. The silence where the Architect's guidance once was is deafening.",tg:["cataclysm"],mj:1,sh:"diamond"}
+]},
+{id:"e11",wt:1,nm:"Era 11",sub:"The Aftermath",sp:"Short — Ends with the New Empire",cl:"#ff8800",ds:"A broken Void. Oreithyia deteriorates and is killed. Ir'czathikx is slain by adventurers. And from death, Oreithyia is reborn as something greater.",ev:[
+{tt:"A Shattered World",dt:"Early Era 11",ds:"Violent mana storms rage. Entities born from the Void's pain haunt the darkness. Pure Aetherians grieve. The Empire exists in name only.",lr:"The Wastes, Labyrinthium, the Ruins — all are damaged, overrun with Spectres, or barely functioning.",tg:["cataclysm"],sh:"square"},
+{tt:"Failed Revival Attempts",dt:"Era 11",ds:"Efforts to restore the Empire fail. Without the Palace, the Throne, or a living population, the dream of unity seems extinguished.",lr:"Various factions claim authority, but none have the power or legitimacy to unite what remains.",tg:["character"],sh:"circle"},
+{tt:"Oreithyia's Deterioration",dt:"Era 11",ds:"Oreithyia's Void Spirit outgrows her body. She disintegrates slowly — the only known case of Void Deterioration. She refuses temporal stasis.",lr:"There is no cure. Oreithyia has lived for billions of years. She knows what is coming, and she faces it with stubborn pride.",tg:["character"],sh:"circle",ch:["oreithyia"]},
+{tt:"Ir'czathikx is Slain",dt:"Era 11",ds:"The creator of all Voidlords, driven fully insane, is killed by adventurers for her crimes. The mother of the Voidspawn destroyed by her own creations.",lr:"Her death severs the last direct link to the Void's creation. No one who was there at the beginning remains.",tg:["character","war"],mj:1,sh:"diamond",ch:["irczathikx"]},
+{tt:"Death of Oreithyia",dt:"Late Era 11",ds:"Already deteriorating, Oreithyia is killed during a minor conflict by a Verzanium dagger — toxic to Voidlords. After billions of years, this is how it ends.",lr:"It is not a grand death. No cosmic battle, no final stand. An ancient Empress stabbed with a poisoned blade. Or so it seems.",tg:["character","cataclysm"],mj:1,sh:"diamond",ch:["oreithyia"]},
+{tt:"Rebirth as Madrafylaka",dt:"Late Era 11",ds:"Oreithyia is reborn through an unknown power — ascending to void deity status. She takes the name Madrafylaka. She remembers nothing.",lr:"A new void deity with immense power and no memory of billions of years. A blank slate in a broken world.",tg:["character","creation"],mj:1,sh:"diamond",ch:["madrafylaka"]},
+{tt:"The New Voidic Empire Founded",dt:"End of Era 11",ds:"Madrafylaka founds the New Voidic Empire. Something like hope returns to the Void.",lr:"The New Empire is not the old one reborn. Led by a deity, not a mortal ruler. Whether this is better remains to be seen.",tg:["creation"],mj:1,sh:"diamond",ch:["madrafylaka"]}
+]},
+{id:"e12",wt:1,nm:"Era 12",sub:"The New Empire",sp:"Present Day",cl:"#ffd700",ds:"The current era. The New Voidic Empire under Madrafylaka. Adventurers delve into dungeons. Fragments are sought. The Scourge sleeps. For now.",ev:[
+{tt:"Madrafylaka's Rule",dt:"Era 12 — Present",ds:"The New Empire takes shape under a void deity with no memory of being Oreithyia — forging a new path rather than repeating the old one.",lr:"Can someone who doesn't remember the past avoid repeating it? The answer will define the future of the Void.",tg:["character","creation"],mj:1,sh:"diamond",ch:["madrafylaka"]},
+{tt:"Adventurers in the Void",dt:"Era 12",ds:"Brave or foolish souls explore dungeons, seek rare minerals, hunt Fragments of the Machine God, and confront the horrors in the dark.",lr:"This is where the game takes place. Players are adventurers in Era 12 — navigating a world scarred by billions of years of history.",tg:["discovery"],sh:"circle"},
+{tt:"The Palace Still Stands",dt:"Era 12",ds:"Oreithyia's Palace endures in fragments. Defences active. Guards patrolling. A treasure trove for those brave enough to enter.",lr:"The royal guards defend the Palace with robotic autonomy, atoning for their failure. Powerful artifacts, knowledge, and riches remain within.",tg:["discovery"],sh:"square"},
+{tt:"The Scourge Sleeps",dt:"Era 12",ds:"In the Abyss below, the Scourge remains imprisoned. Null given form, banished by a dead god. How long can a prison built by a corpse hold?",lr:"Some Fragments of the Machine God have fallen into the Abyss. Anyone seeking them ventures close to the one entity that even the Nameless Deity could not truly destroy.",tg:["cataclysm"],mj:1,sh:"diamond",ch:["scourge"]}
+]}
+];
+
+let af=new Set(["all"]);
+function initSF(){const el=document.getElementById('sf');['s','m','f'].forEach((s,i)=>{const l=document.createElement('div');l.className='star-layer';l.dataset.sp=[.02,.05,.1][i];let h='';for(let j=0;j<[90,50,25][i];j++){const x=Math.random()*100,y=Math.random()*200,sz=[1,1.5,2][i]*(.5+Math.random()),op=.2+Math.random()*.5,c=Math.random()>.9?`rgba(123,47,255,${op})`:`rgba(200,184,232,${op})`;h+=`<div style="position:absolute;left:${x}%;top:${y}%;width:${sz}px;height:${sz}px;background:${c};border-radius:50%"></div>`}l.innerHTML=h;el.appendChild(l)})}
+
+function initHeroFX(){
+  // ═══ SWIRLING VORTEX ═══
+  const cvs=document.getElementById('maw-canvas');
+  if(cvs){
+    const ctx=cvs.getContext('2d');
+    const W=700,H=700,cx=W/2,cy=H/2;
+    let t=0;
+    const arms=5;
+    const particles=[];
+    // Create spiral particles
+    for(let i=0;i<300;i++){
+      const angle=Math.random()*Math.PI*2;
+      const dist=30+Math.random()*280;
+      const speed=.15+Math.random()*.35;
+      const size=.5+Math.random()*2;
+      const bright=Math.random();
+      particles.push({angle,dist,speed,size,bright,baseAngle:angle,baseDist:dist,drift:Math.random()*Math.PI*2});
+    }
+    function drawVortex(){
+      ctx.clearRect(0,0,W,H);
+      t+=.003;
+      // Core glow
+      const coreG=ctx.createRadialGradient(cx,cy,0,cx,cy,60);
+      coreG.addColorStop(0,'rgba(0,0,0,1)');
+      coreG.addColorStop(.4,'rgba(0,0,0,.95)');
+      coreG.addColorStop(.7,'rgba(40,0,80,.4)');
+      coreG.addColorStop(1,'transparent');
+      ctx.fillStyle=coreG;
+      ctx.beginPath();ctx.arc(cx,cy,60,0,Math.PI*2);ctx.fill();
+      // Swirl arms
+      for(let a=0;a<arms;a++){
+        const armAngle=(a/arms)*Math.PI*2+t*2;
+        ctx.beginPath();
+        for(let r=20;r<300;r+=2){
+          const twist=armAngle+r*.018+Math.sin(t*3+r*.01)*.15;
+          const x=cx+Math.cos(twist)*r;
+          const y=cy+Math.sin(twist)*r;
+          const alpha=Math.max(0,(1-r/300)*.12+Math.sin(t*4+r*.02)*.03);
+          ctx.strokeStyle=`rgba(123,47,255,${alpha})`;
+          ctx.lineWidth=3-r/150;
+          if(r===20)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+        }
+        ctx.stroke();
+      }
+      // Secondary arms (dimmer, reverse)
+      for(let a=0;a<3;a++){
+        const armAngle=(a/3)*Math.PI*2-t*1.5+Math.PI/6;
+        ctx.beginPath();
+        for(let r=30;r<250;r+=3){
+          const twist=armAngle+r*.022;
+          const x=cx+Math.cos(twist)*r;
+          const y=cy+Math.sin(twist)*r;
+          const alpha=Math.max(0,(1-r/250)*.06);
+          ctx.strokeStyle=`rgba(170,0,255,${alpha})`;
+          ctx.lineWidth=2-r/200;
+          if(r===30)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+        }
+        ctx.stroke();
+      }
+      // Particles spiralling inward
+      for(const p of particles){
+        p.angle+=p.speed*.008*(300/(p.dist+30));
+        p.dist+=(p.baseDist-p.dist)*.002+Math.sin(t*5+p.drift)*.3;
+        const wobble=Math.sin(t*3+p.drift)*.03;
+        const x=cx+Math.cos(p.angle+wobble)*p.dist;
+        const y=cy+Math.sin(p.angle+wobble)*p.dist;
+        const fade=Math.max(0,Math.min(1,(p.dist-20)/250));
+        const pulse=.5+Math.sin(t*8+p.drift)*.3;
+        const alpha=fade*(.15+p.bright*.25)*pulse;
+        const r=p.bright>.7?170:123;
+        const g=p.bright>.7?0:47;
+        const b=255;
+        ctx.fillStyle=`rgba(${r},${g},${b},${alpha})`;
+        ctx.beginPath();ctx.arc(x,y,p.size,0,Math.PI*2);ctx.fill();
+        // Glow on bright particles
+        if(p.bright>.8){
+          ctx.fillStyle=`rgba(${r},${g},${b},${alpha*.3})`;
+          ctx.beginPath();ctx.arc(x,y,p.size*3,0,Math.PI*2);ctx.fill();
+        }
+      }
+      // Inner event horizon glow
+      const ehG=ctx.createRadialGradient(cx,cy,5,cx,cy,45);
+      ehG.addColorStop(0,'rgba(0,0,0,.9)');
+      ehG.addColorStop(.5,`rgba(80,0,160,${.15+Math.sin(t*6)*.05})`);
+      ehG.addColorStop(1,'transparent');
+      ctx.fillStyle=ehG;
+      ctx.beginPath();ctx.arc(cx,cy,45,0,Math.PI*2);ctx.fill();
+      // Outer atmospheric glow
+      const outerG=ctx.createRadialGradient(cx,cy,150,cx,cy,350);
+      outerG.addColorStop(0,`rgba(123,47,255,${.04+Math.sin(t*2)*.02})`);
+      outerG.addColorStop(.5,`rgba(80,0,160,${.02+Math.sin(t*3)*.01})`);
+      outerG.addColorStop(1,'transparent');
+      ctx.fillStyle=outerG;
+      ctx.beginPath();ctx.arc(cx,cy,350,0,Math.PI*2);ctx.fill();
+      requestAnimationFrame(drawVortex);
+    }
+    drawVortex();
+  }
+  // ═══ ACCRETION DISK — particles spiralling into the maw ═══
+  const acvs=document.getElementById('accretion-canvas');
+  if(acvs){
+    const resizeAc=()=>{acvs.width=acvs.parentElement.offsetWidth;acvs.height=acvs.parentElement.offsetHeight};
+    resizeAc();window.addEventListener('resize',resizeAc);
+    const actx=acvs.getContext('2d');
+    
+    // Particle types: dust (small, many), debris (larger, fewer), mana wisps (glowing, medium)
+    const disk=[];
+    // Dust — fine particles spread across the full disk
+    for(let i=0;i<500;i++){
+      const angle=Math.random()*Math.PI*2;
+      const dist=40+Math.random()*700;
+      disk.push({
+        angle, dist, maxDist:dist,
+        speed:.08+Math.random()*.2,
+        size:.3+Math.random()*1.5,
+        type:'dust',
+        bright:Math.random(),
+        phase:Math.random()*Math.PI*2,
+        drift:(.5-Math.random())*.02,
+        tilt:.82+Math.random()*.36
+      });
+    }
+    // Debris — larger irregular fragments across the disk
+    for(let i=0;i<50;i++){
+      const angle=Math.random()*Math.PI*2;
+      const dist=60+Math.random()*600;
+      disk.push({
+        angle, dist, maxDist:dist,
+        speed:.03+Math.random()*.08,
+        size:1.5+Math.random()*3.5,
+        type:'debris',
+        bright:Math.random(),
+        phase:Math.random()*Math.PI*2,
+        drift:(.5-Math.random())*.01,
+        tilt:.78+Math.random()*.44,
+        aspect:.3+Math.random()*.5,
+        rot:Math.random()*Math.PI*2,
+        rotSpeed:.005+Math.random()*.02
+      });
+    }
+    // Mana wisps — glowing, drawn inward faster
+    for(let i=0;i<80;i++){
+      const angle=Math.random()*Math.PI*2;
+      const dist=40+Math.random()*600;
+      disk.push({
+        angle, dist, maxDist:dist,
+        speed:.15+Math.random()*.35,
+        size:.8+Math.random()*2,
+        type:'wisp',
+        bright:.5+Math.random()*.5,
+        phase:Math.random()*Math.PI*2,
+        drift:(.5-Math.random())*.015,
+        tilt:.85+Math.random()*.3,
+        trail:[]
+      });
+    }
+
+    let at=0;
+    function drawAccretion(){
+      const W=acvs.width,H=acvs.height,cx=W/2,cy=H/2;
+      const maxR=Math.max(W,H)*.7; // arms reach to edges
+      actx.clearRect(0,0,W,H);
+      at+=.002;
+
+      // ═══ LARGE SPIRAL ARMS — galaxy-scale structure ═══
+      const numArms=4;
+      for(let a=0;a<numArms;a++){
+        const armBase=(a/numArms)*Math.PI*2+at*1.5;
+        // Each arm is drawn as a thick gradient path
+        for(let layer=0;layer<3;layer++){
+          actx.beginPath();
+          const layerOff=layer*.08;
+          const layerAlpha=[.06,.035,.018][layer];
+          const layerWidth=[40,80,140][layer];
+          for(let r=30;r<maxR;r+=3){
+            const twist=armBase+r*.005+Math.sin(at*2+r*.003+layerOff)*.2;
+            const x=cx+Math.cos(twist)*r;
+            const y=cy+Math.sin(twist)*r*.88; // slight tilt
+            if(r===30)actx.moveTo(x,y);else actx.lineTo(x,y);
+          }
+          const fade=Math.max(0,layerAlpha+Math.sin(at*3+a)*.01);
+          actx.strokeStyle=`rgba(123,47,255,${fade})`;
+          actx.lineWidth=layerWidth;
+          actx.lineCap='round';
+          actx.stroke();
+        }
+        // Bright inner edge of each arm
+        actx.beginPath();
+        for(let r=25;r<maxR*.7;r+=3){
+          const twist=armBase+r*.005+.05;
+          const x=cx+Math.cos(twist)*r;
+          const y=cy+Math.sin(twist)*r*.88;
+          if(r===25)actx.moveTo(x,y);else actx.lineTo(x,y);
+        }
+        actx.strokeStyle=`rgba(155,77,255,${.04+Math.sin(at*4+a*2)*.015})`;
+        actx.lineWidth=6;
+        actx.stroke();
+      }
+
+      // ═══ SECONDARY OUTER ARMS — thinner, further out ═══
+      for(let a=0;a<3;a++){
+        const armBase=(a/3)*Math.PI*2-at*1.2+Math.PI/5;
+        actx.beginPath();
+        for(let r=100;r<maxR*.9;r+=4){
+          const twist=armBase+r*.004;
+          const x=cx+Math.cos(twist)*r;
+          const y=cy+Math.sin(twist)*r*.85;
+          if(r===100)actx.moveTo(x,y);else actx.lineTo(x,y);
+        }
+        actx.strokeStyle=`rgba(100,20,200,${.025+Math.sin(at*2.5+a)*.008})`;
+        actx.lineWidth=60;
+        actx.lineCap='round';
+        actx.stroke();
+      }
+
+      // ═══ PARTICLES ═══
+      disk.sort((a,b)=>b.dist-a.dist);
+
+      for(const p of disk){
+        p.angle+=p.speed*.006*(400/(p.dist+40));
+        p.angle+=p.drift;
+        p.dist-=.03+(.15*(400/(p.dist+60)));
+        if(p.dist<15){
+          p.dist=p.maxDist*.8+Math.random()*p.maxDist*.4;
+          p.angle=Math.random()*Math.PI*2;
+          if(p.type==='wisp') p.trail=[];
+        }
+
+        const orbitAngle=p.angle+at*2;
+        const x=cx+Math.cos(orbitAngle)*p.dist;
+        const y=cy+Math.sin(orbitAngle)*p.dist*p.tilt;
+        const distFade=Math.max(0,Math.min(1,(p.dist-15)/80));
+        const edgeFade=Math.max(0,1-(p.dist/(maxR+100)));
+        const pulse=.6+Math.sin(at*8+p.phase)*.4;
+
+        if(p.type==='dust'){
+          const alpha=distFade*edgeFade*(.1+p.bright*.18)*pulse;
+          const hue=p.bright>.7?'170,0,255':'123,47,255';
+          actx.fillStyle=`rgba(${hue},${alpha})`;
+          actx.beginPath();actx.arc(x,y,p.size,0,Math.PI*2);actx.fill();
+        }
+        else if(p.type==='debris'){
+          p.rot+=p.rotSpeed;
+          const alpha=distFade*edgeFade*(.12+p.bright*.15)*pulse;
+          actx.save();
+          actx.translate(x,y);
+          actx.rotate(p.rot);
+          actx.fillStyle=`rgba(74,26,153,${alpha})`;
+          actx.fillRect(-p.size/2,-p.size*p.aspect/2,p.size,p.size*p.aspect);
+          if(p.bright>.6){
+            actx.fillStyle=`rgba(123,47,255,${alpha*.5})`;
+            actx.fillRect(-p.size/2-1,-p.size*p.aspect/2-1,p.size+2,p.size*p.aspect+2);
+          }
+          actx.restore();
+        }
+        else if(p.type==='wisp'){
+          p.trail.push({x,y});
+          if(p.trail.length>12) p.trail.shift();
+          for(let ti=0;ti<p.trail.length;ti++){
+            const tp=p.trail[ti];
+            const trailAlpha=distFade*edgeFade*(ti/p.trail.length)*.2*p.bright;
+            const trailSize=p.size*((ti/p.trail.length)*.6+.2);
+            const isM=p.bright>.7;
+            actx.fillStyle=isM?`rgba(255,0,255,${trailAlpha})`:`rgba(155,77,255,${trailAlpha})`;
+            actx.beginPath();actx.arc(tp.x,tp.y,trailSize,0,Math.PI*2);actx.fill();
+          }
+          const alpha=distFade*edgeFade*(.3+p.bright*.3)*pulse;
+          const isM=p.bright>.7;
+          actx.fillStyle=isM?`rgba(255,0,255,${alpha})`:`rgba(155,77,255,${alpha})`;
+          actx.beginPath();actx.arc(x,y,p.size,0,Math.PI*2);actx.fill();
+          actx.fillStyle=isM?`rgba(255,0,255,${alpha*.2})`:`rgba(155,77,255,${alpha*.2})`;
+          actx.beginPath();actx.arc(x,y,p.size*3.5,0,Math.PI*2);actx.fill();
+        }
+      }
+
+      // ═══ ATMOSPHERIC GLOW ═══
+      const diskG=actx.createRadialGradient(cx,cy,30,cx,cy,maxR*.6);
+      diskG.addColorStop(0,`rgba(123,47,255,${.04+Math.sin(at*3)*.015})`);
+      diskG.addColorStop(.3,`rgba(80,0,160,${.02+Math.sin(at*2)*.008})`);
+      diskG.addColorStop(1,'transparent');
+      actx.fillStyle=diskG;
+      actx.beginPath();actx.ellipse(cx,cy,maxR*.6,maxR*.52,0,0,Math.PI*2);actx.fill();
+
+      requestAnimationFrame(drawAccretion);
+    }
+    drawAccretion();
+  }
+}function updPx(){const sy=window.scrollY;document.querySelectorAll('.star-layer').forEach(l=>{l.style.transform=`translateY(${-sy*parseFloat(l.dataset.sp)}px)`})}
+function bldMM(){const mm=document.getElementById('mm');mm.innerHTML='<div class="mm-pos" id="mmp"></div>';E.forEach(e=>{const d=document.createElement('div');d.className='mm-e';d.style.background=e.cl+'33';d.style.borderColor=e.cl+'66';d.innerHTML=`<span class="mml">${e.sub}</span>`;d.addEventListener('click',()=>{const s=document.getElementById('s-'+e.id);if(s)s.scrollIntoView({behavior:'smooth',block:'start'})});d.dataset.eid=e.id;mm.appendChild(d)});sizeMM()}
+function sizeMM(){const secs=document.querySelectorAll('.era-s');const mmes=document.querySelectorAll('.mm-e');if(!secs.length)return;const heights=[];secs.forEach(s=>heights.push(s.offsetHeight));const total=heights.reduce((a,b)=>a+b,0)||1;mmes.forEach((m,i)=>{m.style.flex='0 0 '+(heights[i]/total*100)+'%'})}
+function updMM(){const secs=document.querySelectorAll('.era-s');const mmes=document.querySelectorAll('.mm-e');const pos=document.getElementById('mmp');if(!secs.length||!pos)return;const threshold=window.innerHeight*.15;let ai=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<threshold)ai=i});mmes.forEach((m,i)=>m.classList.toggle('act',i===ai));checkEraSfx(E[ai]?.id);// Position cursor within the active era's minimap segment
+const activeMM=mmes[ai];if(!activeMM)return;const activeSec=secs[ai];const secRect=activeSec.getBoundingClientRect();const secTop=secRect.top;const secH=secRect.height||1;// How far through this section are we? 0 = just entered, 1 = about to leave
+const progress=Math.max(0,Math.min(1,(threshold-secTop)/secH));const mmTop=activeMM.offsetTop;const mmH=activeMM.offsetHeight;pos.style.top=(mmTop+progress*mmH)+'px'}
+function initF(){document.querySelectorAll('.fbtn').forEach(b=>{b.addEventListener('click',()=>{const t=b.dataset.t;if(t==='all'){af=new Set(['all']);document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));b.classList.add('on')}else{af.delete('all');document.querySelector('.fbtn[data-t="all"]').classList.remove('on');if(af.has(t)){af.delete(t);b.classList.remove('on')}else{af.add(t);b.classList.add('on')}if(!af.size){af.add('all');document.querySelector('.fbtn[data-t="all"]').classList.add('on')}}sfx('filter');apF()})})}
+function apF(){const all=af.has('all');document.querySelectorAll('.evt').forEach(e=>{const tg=JSON.parse(e.dataset.tg||'[]');e.classList.toggle('fout',!all&&!tg.some(t=>af.has(t)))});document.querySelectorAll('.era-s').forEach(s=>{const evs=s.querySelectorAll('.evt:not(.fout)');s.classList.toggle('fout',evs.length===0&&!all)})}
+function initCT(){const tt=document.getElementById('ctt');document.addEventListener('mousemove',e=>{tt.style.left=Math.min(e.clientX+15,window.innerWidth-260)+'px';tt.style.top=Math.min(e.clientY+15,window.innerHeight-180)+'px'})}
+function shCh(id,show){const tt=document.getElementById('ctt');if(!show||!id){tt.classList.remove('vis');return}const c=C[id];if(!c){tt.classList.remove('vis');return}document.getElementById('ci').textContent=c.i;document.getElementById('cn').textContent=c.n;document.getElementById('ct2').textContent=c.t;document.getElementById('cdd').textContent=c.d;tt.classList.add('vis')}
+function bldTL(){const tc=document.getElementById('tc');tc.innerHTML='';E.forEach((era,ei)=>{const sec=document.createElement('section');sec.className='era-s';sec.id='s-'+era.id;sec.innerHTML=`<div class="era-hd"><div class="era-num" style="color:${era.cl}55">${era.nm}</div><div class="era-nm" style="color:${era.cl}">${era.sub}</div><div class="era-sp">${era.sp}</div><div class="era-ds">${era.ds}</div></div><div class="vtl" style="--era-color:${era.cl}"></div>`;const vtl=sec.querySelector('.vtl');vtl.style.setProperty('--ec',era.cl);const bef=document.createElement('style');bef.textContent=`#s-${era.id} .vtl::before{background:linear-gradient(to bottom,transparent,${era.cl},transparent)}`;sec.appendChild(bef);
+era.ev.forEach((evt,i)=>{const side=i%2===0?'L':'R';const nc=['nd',evt.sh||'circle',evt.mj?'major':''].filter(Boolean).join(' ');const thml=(evt.tg||[]).map(t=>`<span class="etag ${t}">${t}</span>`).join('');const chml=(evt.ch||[]).map(id=>{const c=C[id];return c?`<div class="cref" data-ch="${id}"><div class="cico">${c.i}</div><div class="cinf"><div class="cname">${c.n}</div><div class="ctit">${c.t}</div></div></div>`:''}).join('');
+const ev=document.createElement('div');ev.className=`evt ${side}`;ev.dataset.tg=JSON.stringify(evt.tg||[]);ev.innerHTML=`<div class="ec"><div class="ecard"><div class="dt">${evt.dt||''}</div><div class="tt" style="color:${era.cl}">${evt.tt}</div><div class="ds">${evt.ds}</div><div class="tgs">${thml}</div><div class="exh">▸ Click to expand</div></div><div class="edtl"><div class="lore">${evt.lr||''}</div>${chml}</div></div><div class="es"></div><div class="${nc}" style="border-color:${era.cl}"></div>`;
+const card=ev.querySelector('.ecard'),dtl=ev.querySelector('.edtl');card.addEventListener('click',()=>{const o=dtl.classList.contains('open');document.querySelectorAll('.edtl.open').forEach(d=>d.classList.remove('open'));if(!o){dtl.classList.add('open');sfx('expand')}else{sfx('collapse')}});
+ev.querySelectorAll('.cref').forEach(cr=>{cr.addEventListener('mouseenter',()=>shCh(cr.dataset.ch,true));cr.addEventListener('mouseleave',()=>shCh(null,false))});
+if(evt.ch&&evt.ch.length){card.addEventListener('mouseenter',()=>{shCh(evt.ch[0],true);sfx('hover')});card.addEventListener('mouseleave',()=>shCh(null,false))}else{card.addEventListener('mouseenter',()=>sfx('hover'))}
+vtl.appendChild(ev)});tc.appendChild(sec);
+if(ei<E.length-1){const dv=document.createElement('div');dv.className='ediv';dv.innerHTML='<div class="dia"></div>';tc.appendChild(dv)}})}
+function initSR(){const ob=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')})},{threshold:.08,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.evt').forEach(e=>ob.observe(e))}
+// ═══ AUDIO SYSTEM ═══
+// Set MUSIC_URL to your MP3 path/URL to enable background music
+const MUSIC_URL = 'into-the-void-menu.ogg';
+let audioCtx=null;
+let sfxEnabled=true;
+let musicEl=null;
+let musicReady=false;
+let lastEraId='';
+
+function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
+
+function sfx(type){
+  if(!sfxEnabled)return;
+  try{
+    const ctx=getCtx();
+    const now=ctx.currentTime;
+
+    switch(type){
+      case'hover': {
+        // Soft crystalline chime — two detuned sines with fast fade
+        const g=ctx.createGain();g.connect(ctx.destination);
+        g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(.035,now+.02);g.gain.exponentialRampToValueAtTime(.001,now+.25);
+        const o1=ctx.createOscillator();o1.type='sine';o1.frequency.setValueAtTime(1100,now);o1.frequency.exponentialRampToValueAtTime(1400,now+.15);o1.connect(g);o1.start(now);o1.stop(now+.25);
+        const o2=ctx.createOscillator();o2.type='sine';o2.frequency.setValueAtTime(1650,now);o2.frequency.exponentialRampToValueAtTime(1800,now+.15);o2.detune.value=7;
+        const g2=ctx.createGain();g2.gain.setValueAtTime(0,now);g2.gain.linearRampToValueAtTime(.02,now+.02);g2.gain.exponentialRampToValueAtTime(.001,now+.2);
+        o2.connect(g2);g2.connect(ctx.destination);o2.start(now);o2.stop(now+.2);
+        break;
+      }
+      case'expand': {
+        // Ethereal rising shimmer — layered harmonics ascending
+        for(let i=0;i<3;i++){
+          const o=ctx.createOscillator();const g=ctx.createGain();
+          o.type='sine';
+          const base=400+i*280;
+          o.frequency.setValueAtTime(base,now+i*.04);o.frequency.exponentialRampToValueAtTime(base*1.5,now+i*.04+.3);
+          g.gain.setValueAtTime(0,now+i*.04);g.gain.linearRampToValueAtTime(.025-i*.006,now+i*.04+.03);g.gain.exponentialRampToValueAtTime(.001,now+i*.04+.35);
+          o.connect(g);g.connect(ctx.destination);o.start(now+i*.04);o.stop(now+i*.04+.35);
+        }
+        // Soft noise breath
+        const bufLen=ctx.sampleRate*.3;const buf=ctx.createBuffer(1,bufLen,ctx.sampleRate);const d=buf.getChannelData(0);
+        for(let i=0;i<bufLen;i++)d[i]=(Math.random()*2-1)*.3;
+        const ns=ctx.createBufferSource();ns.buffer=buf;
+        const flt=ctx.createBiquadFilter();flt.type='bandpass';flt.frequency.value=2000;flt.Q.value=3;
+        const ng=ctx.createGain();ng.gain.setValueAtTime(0,now);ng.gain.linearRampToValueAtTime(.015,now+.05);ng.gain.exponentialRampToValueAtTime(.001,now+.3);
+        ns.connect(flt);flt.connect(ng);ng.connect(ctx.destination);ns.start(now);ns.stop(now+.3);
+        break;
+      }
+      case'collapse': {
+        // Soft descending whisper — reverse of expand
+        for(let i=0;i<2;i++){
+          const o=ctx.createOscillator();const g=ctx.createGain();
+          o.type='sine';
+          const base=800-i*200;
+          o.frequency.setValueAtTime(base,now+i*.03);o.frequency.exponentialRampToValueAtTime(base*.6,now+i*.03+.25);
+          g.gain.setValueAtTime(0,now+i*.03);g.gain.linearRampToValueAtTime(.025,now+i*.03+.02);g.gain.exponentialRampToValueAtTime(.001,now+i*.03+.25);
+          o.connect(g);g.connect(ctx.destination);o.start(now+i*.03);o.stop(now+i*.03+.25);
+        }
+        break;
+      }
+      case'filter': {
+        // Soft magical click — quick resonant ping
+        const o=ctx.createOscillator();const g=ctx.createGain();
+        o.type='sine';o.frequency.setValueAtTime(900,now);o.frequency.exponentialRampToValueAtTime(1300,now+.08);
+        g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(.04,now+.01);g.gain.exponentialRampToValueAtTime(.001,now+.18);
+        o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+.18);
+        // Harmonic overtone
+        const o2=ctx.createOscillator();const g2=ctx.createGain();
+        o2.type='sine';o2.frequency.setValueAtTime(1800,now+.02);o2.frequency.exponentialRampToValueAtTime(2200,now+.1);
+        g2.gain.setValueAtTime(0,now+.02);g2.gain.linearRampToValueAtTime(.015,now+.03);g2.gain.exponentialRampToValueAtTime(.001,now+.15);
+        o2.connect(g2);g2.connect(ctx.destination);o2.start(now+.02);o2.stop(now+.15);
+        break;
+      }
+      case'era': {
+        // Deep void resonance — low tone swelling with harmonic shimmer
+        const o=ctx.createOscillator();const g=ctx.createGain();
+        o.type='sine';o.frequency.setValueAtTime(120,now);o.frequency.exponentialRampToValueAtTime(180,now+.3);o.frequency.exponentialRampToValueAtTime(140,now+.6);
+        g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(.06,now+.1);g.gain.linearRampToValueAtTime(.04,now+.3);g.gain.exponentialRampToValueAtTime(.001,now+.7);
+        o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+.7);
+        // High shimmer cascade
+        for(let i=0;i<4;i++){
+          const oh=ctx.createOscillator();const gh=ctx.createGain();
+          oh.type='sine';
+          const freq=600+i*300+Math.random()*100;
+          oh.frequency.setValueAtTime(freq,now+.05+i*.06);oh.frequency.exponentialRampToValueAtTime(freq*1.15,now+.05+i*.06+.25);
+          gh.gain.setValueAtTime(0,now+.05+i*.06);gh.gain.linearRampToValueAtTime(.012,now+.07+i*.06);gh.gain.exponentialRampToValueAtTime(.001,now+.05+i*.06+.3);
+          oh.connect(gh);gh.connect(ctx.destination);oh.start(now+.05+i*.06);oh.stop(now+.05+i*.06+.3);
+        }
+        // Filtered noise sweep — like a void wind
+        const bufLen=ctx.sampleRate*.6;const buf=ctx.createBuffer(1,bufLen,ctx.sampleRate);const d=buf.getChannelData(0);
+        for(let i=0;i<bufLen;i++)d[i]=(Math.random()*2-1);
+        const ns=ctx.createBufferSource();ns.buffer=buf;
+        const flt=ctx.createBiquadFilter();flt.type='bandpass';flt.frequency.setValueAtTime(300,now);flt.frequency.exponentialRampToValueAtTime(1200,now+.3);flt.frequency.exponentialRampToValueAtTime(400,now+.6);flt.Q.value=5;
+        const ng=ctx.createGain();ng.gain.setValueAtTime(0,now);ng.gain.linearRampToValueAtTime(.02,now+.1);ng.gain.exponentialRampToValueAtTime(.001,now+.6);
+        ns.connect(flt);flt.connect(ng);ng.connect(ctx.destination);ns.start(now);ns.stop(now+.6);
+        break;
+      }
+    }
+  }catch(e){}
+}
+
+function initAudio(){
+  const playBtn=document.getElementById('ap-play');
+  const volSlider=document.getElementById('ap-vol');
+  const sfxBtn=document.getElementById('ap-sfx');
+
+  // Music element is already created in DOMContentLoaded and started by loading screen
+  playBtn.addEventListener('click',()=>{
+    if(!musicReady){try{getCtx()}catch(e){}return}
+    if(musicEl.paused){
+      musicEl.play().then(()=>{playBtn.textContent='❚❚';playBtn.classList.add('playing')}).catch(()=>{});
+    }else{
+      musicEl.pause();playBtn.textContent='▶';playBtn.classList.remove('playing');
+    }
+  });
+
+  volSlider.addEventListener('input',()=>{
+    if(musicEl)musicEl.volume=volSlider.value/100;
+  });
+
+  sfxBtn.addEventListener('click',()=>{
+    sfxEnabled=!sfxEnabled;
+    sfxBtn.classList.toggle('off',!sfxEnabled);
+    sfx('filter');
+  });
+}
+
+// Wire SFX into era changes
+function checkEraSfx(eraId){
+  if(eraId&&eraId!==lastEraId){lastEraId=eraId;sfx('era')}
+}
+
+// ═══ LOADING SCREEN PORTAL ═══
+function initLoadScreen(){
+  const cvs=document.getElementById('load-canvas');
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  const W=700,H=700,cx=W/2,cy=H/2;
+  let lt=0;
+  let portalScale=0;
+  let dismissed=false;
+  let opening=false;
+  let openProgress=0;
+  const screen=document.getElementById('load-screen');
+  const arms=5;
+  
+  // Same particle system as hero maw
+  const particles=[];
+  for(let i=0;i<300;i++){
+    const angle=Math.random()*Math.PI*2;
+    const dist=30+Math.random()*280;
+    particles.push({angle,dist,speed:.15+Math.random()*.35,size:.5+Math.random()*2,bright:Math.random(),baseDist:dist,drift:Math.random()*Math.PI*2});
+  }
+
+  function drawPortal(){
+    if(dismissed)return;
+    ctx.clearRect(0,0,W,H);
+    
+    const isOpening=screen.classList.contains('phase-opening');
+    if(isOpening){
+      lt+=.01;
+      openProgress=Math.min(1,openProgress+.012);
+    }else{
+      lt+=.003;
+    }
+    
+    if(portalScale<1)portalScale=Math.min(1,portalScale+.006);
+    const s=1-Math.pow(1-portalScale,3); // ease-out
+    const intensity=1+openProgress*1.5;
+    
+    // ═══ LARGE SPIRAL ARMS — galaxy-scale, matching accretion disk ═══
+    const armMaxR=340*s;
+    const numBigArms=4;
+    for(let a=0;a<numBigArms;a++){
+      const armBase=(a/numBigArms)*Math.PI*2+lt*1.5;
+      for(let layer=0;layer<3;layer++){
+        ctx.beginPath();
+        const layerOff=layer*.08;
+        const baseAlpha=[.06,.035,.018][layer]*s*intensity;
+        const layerWidth=[40,80,140][layer]*s;
+        for(let r=30;r<armMaxR;r+=3){
+          const twist=armBase+r*.005+Math.sin(lt*2+r*.003+layerOff)*.2;
+          const x=cx+Math.cos(twist)*r;
+          const y=cy+Math.sin(twist)*r*.88;
+          if(r===30)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+        }
+        ctx.strokeStyle=`rgba(123,47,255,${Math.max(0,baseAlpha+Math.sin(lt*3+a)*.01)})`;
+        ctx.lineWidth=layerWidth;
+        ctx.lineCap='round';
+        ctx.stroke();
+      }
+      // Bright inner edge
+      ctx.beginPath();
+      for(let r=25;r<armMaxR*.7;r+=3){
+        const twist=armBase+r*.005+.05;
+        const x=cx+Math.cos(twist)*r;
+        const y=cy+Math.sin(twist)*r*.88;
+        if(r===25)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle=`rgba(155,77,255,${(.04+Math.sin(lt*4+a*2)*.015)*s*intensity})`;
+      ctx.lineWidth=6*s;
+      ctx.stroke();
+    }
+    
+    // ═══ SECONDARY OUTER ARMS ═══
+    for(let a=0;a<3;a++){
+      const armBase=(a/3)*Math.PI*2-lt*1.2+Math.PI/5;
+      ctx.beginPath();
+      for(let r=100*s;r<armMaxR*.9;r+=4){
+        const twist=armBase+r*.004;
+        const x=cx+Math.cos(twist)*r;
+        const y=cy+Math.sin(twist)*r*.85;
+        if(r===Math.floor(100*s))ctx.moveTo(x,y);else ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle=`rgba(100,20,200,${(.025+Math.sin(lt*2.5+a)*.008)*s*intensity})`;
+      ctx.lineWidth=60*s;
+      ctx.lineCap='round';
+      ctx.stroke();
+    }
+
+    // ═══ CORE GLOW — matches hero maw ═══
+    const coreR=60*s;
+    const coreG=ctx.createRadialGradient(cx,cy,0,cx,cy,coreR);
+    coreG.addColorStop(0,'rgba(0,0,0,1)');
+    coreG.addColorStop(.4,'rgba(0,0,0,.95)');
+    coreG.addColorStop(.7,`rgba(40,0,80,${.4*s*intensity})`);
+    coreG.addColorStop(1,'transparent');
+    ctx.fillStyle=coreG;
+    ctx.beginPath();ctx.arc(cx,cy,coreR,0,Math.PI*2);ctx.fill();
+    
+    // ═══ SWIRL ARMS — same as hero maw ═══
+    for(let a=0;a<arms;a++){
+      const armAngle=(a/arms)*Math.PI*2+lt*2;
+      ctx.beginPath();
+      const maxR=300*s;
+      for(let r=20;r<maxR;r+=2){
+        const twist=armAngle+r*.018+Math.sin(lt*3+r*.01)*.15;
+        const x=cx+Math.cos(twist)*r;
+        const y=cy+Math.sin(twist)*r;
+        const alpha=Math.max(0,(1-r/maxR)*(.12*intensity)+Math.sin(lt*4+r*.02)*.03);
+        ctx.strokeStyle=`rgba(123,47,255,${alpha*s})`;
+        ctx.lineWidth=(3-r/150)*s;
+        if(r===20)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+    
+    // ═══ SECONDARY ARMS — same as hero maw ═══
+    for(let a=0;a<3;a++){
+      const armAngle=(a/3)*Math.PI*2-lt*1.5+Math.PI/6;
+      ctx.beginPath();
+      const maxR=250*s;
+      for(let r=30;r<maxR;r+=3){
+        const twist=armAngle+r*.022;
+        const x=cx+Math.cos(twist)*r;
+        const y=cy+Math.sin(twist)*r;
+        const alpha=Math.max(0,(1-r/maxR)*(.06*intensity));
+        ctx.strokeStyle=`rgba(170,0,255,${alpha*s})`;
+        ctx.lineWidth=(2-r/200)*s;
+        if(r===30)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+    
+    // ═══ PARTICLES — same as hero maw ═══
+    for(const p of particles){
+      p.angle+=p.speed*.008*(300/(p.dist+30));
+      p.dist+=(p.baseDist-p.dist)*.002+Math.sin(lt*5+p.drift)*.3;
+      const wobble=Math.sin(lt*3+p.drift)*.03;
+      const x=cx+Math.cos(p.angle+wobble)*p.dist*s;
+      const y=cy+Math.sin(p.angle+wobble)*p.dist*s;
+      const fade=Math.max(0,Math.min(1,(p.dist-20)/250));
+      const pulse=.5+Math.sin(lt*8+p.drift)*.3;
+      const alpha=fade*(.15+p.bright*.25)*pulse*s*intensity;
+      const cr=p.bright>.7?170:123;
+      const cg=p.bright>.7?0:47;
+      ctx.fillStyle=`rgba(${cr},${cg},255,${alpha})`;
+      ctx.beginPath();ctx.arc(x,y,p.size*s,0,Math.PI*2);ctx.fill();
+      if(p.bright>.8){
+        ctx.fillStyle=`rgba(${cr},${cg},255,${alpha*.3})`;
+        ctx.beginPath();ctx.arc(x,y,p.size*3*s,0,Math.PI*2);ctx.fill();
+      }
+    }
+    
+    // ═══ EVENT HORIZON — same as hero maw ═══
+    const ehR=45*s;
+    const ehG=ctx.createRadialGradient(cx,cy,5*s,cx,cy,ehR);
+    ehG.addColorStop(0,`rgba(0,0,0,${.9*s})`);
+    ehG.addColorStop(.5,`rgba(80,0,160,${(.15+Math.sin(lt*6)*.05)*s*intensity})`);
+    ehG.addColorStop(1,'transparent');
+    ctx.fillStyle=ehG;
+    ctx.beginPath();ctx.arc(cx,cy,ehR,0,Math.PI*2);ctx.fill();
+    
+    // ═══ OUTER GLOW — same as hero maw ═══
+    const outerG=ctx.createRadialGradient(cx,cy,150*s,cx,cy,350*s);
+    outerG.addColorStop(0,`rgba(123,47,255,${(.04+Math.sin(lt*2)*.02)*s*intensity})`);
+    outerG.addColorStop(.5,`rgba(80,0,160,${(.02+Math.sin(lt*3)*.01)*s*intensity})`);
+    outerG.addColorStop(1,'transparent');
+    ctx.fillStyle=outerG;
+    ctx.beginPath();ctx.arc(cx,cy,350*s,0,Math.PI*2);ctx.fill();
+
+    requestAnimationFrame(drawPortal);
+  }
+  drawPortal();
+
+  // Click / key to enter — cinematic phased transition
+  const enter=()=>{
+    if(dismissed||opening)return;
+    opening=true;
+    
+    // Start music immediately on user interaction
+    if(musicEl&&musicReady){
+      musicEl.play().then(()=>{
+        const pb=document.getElementById('ap-play');
+        if(pb){pb.textContent='❚❚';pb.classList.add('playing')}
+      }).catch(()=>{});
+    }
+    
+    // PHASE 1: Text fades, portal opens dramatically (2s)
+    screen.classList.add('phase-opening');
+    sfx('era'); // void resonance sound
+    // Accelerate portal animation during opening
+    portalScale=1;
+    
+    // PHASE 2: After portal opens, reveal the site behind (1.5s)
+    setTimeout(()=>{
+      screen.classList.add('phase-reveal');
+      document.body.classList.remove('loading');
+      document.body.classList.add('site-revealed');
+    },2000);
+    
+    // PHASE 3: Clean up
+    setTimeout(()=>{
+      dismissed=true;
+      screen.classList.add('phase-done');
+      screen.remove();
+    },4000);
+  };
+  screen.addEventListener('click',enter);
+  document.addEventListener('keydown',e=>{if(!dismissed&&!opening)enter()});
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  // Init music element early so it's ready when loading screen is clicked
+  const volSlider=document.getElementById('ap-vol');
+  if(MUSIC_URL){
+    musicEl=new Audio(MUSIC_URL);
+    musicEl.loop=true;
+    musicEl.volume=volSlider?volSlider.value/100:.25;
+    musicReady=true;
+  }
+  // Start loading screen portal animation
+  initLoadScreen();
+  // Init everything else
+  initSF();initHeroFX();bldTL();bldMM();initF();initCT();initSR();initAudio();
+  window.addEventListener('scroll',()=>{updPx();updMM()},{passive:true});
+  window.addEventListener('resize',()=>sizeMM());
+  updPx();updMM();setTimeout(sizeMM,500);
+});
+</script>
+</body>
+</html>
